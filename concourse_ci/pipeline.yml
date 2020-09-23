@@ -7,15 +7,13 @@ resource_types:
 
 resources:
 
-  - name: devops-lagom-service
+  - name: spring-boot-service
     type: git
     source:
-      uri: https://github.com/azmathasan92/devops-lagom-service.git
-      branch: devlop
-      username: ((username))
-      password: ((password))
+      uri: https://github.com/azmathasan92/concourse-ci-cd.git
+      branch: master
 
-  - name: devops-lagom-service-docker-repository
+  - name: spring-boot-service-docker-repository
     type: docker-image
     source:
       email: ((docker-hub-email))
@@ -37,62 +35,32 @@ jobs:
     public: true
     serial: true
     plan:
-      - get: devops-lagom-service
+      - get: spring-boot-service
         trigger: true
-
       - task: mvn-test
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: maven
-              tag: 3.6.0-jdk-8-alpine
-          run:
-            path: "mvn"
-            args:
-              - -f
-              - devops-lagom-service/pom.xml
-              - clean
-              - compile
-              - test
+        file: spring-boot-service/concourse_ci/tasks/maven-test.yml
 
   - name: Package
     public: true
     serial: true
     plan:
-      - get: devops-lagom-service
-        trigger: false
+      - get: spring-boot-service
+        trigger: true
         passed: [Test]
       - task: mvn-package
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: maven
-              tag: 3.6.0-jdk-8-alpine
-
-          run:
-            path: "mvn"
-            args:
-              - -f
-              - devops-lagom-service/pom.xml
-              - clean
-              - package
-
-      - put: devops-lagom-service-docker-repository
+        file: spring-boot-service/concourse_ci/tasks/maven-package.yml
+      - put: spring-boot-service-docker-repository
         params:
-          build: devops-lagom-service/
+          build: spring-boot-service/
 
   - name: Deploy
     public: true
     serial: true
     plan:
-      - get: devops-lagom-service
+      - get: spring-boot-service
         trigger: false
         passed: [Test,Package]
 
       - put: kubectl
         params:
-          file: "devops-lagom-service/lagom-deploy.yaml"
+          file: "spring-boot-service/spring-boot-deploy.yaml"

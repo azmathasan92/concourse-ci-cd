@@ -1,0 +1,11 @@
+# Docker
+docker-hub-email: <<DOCKER HUB EMAIL>>
+docker-hub-username: <<DOCKER USERNAME>>
+docker-hub-password: <<DOCKER PASSWORD>>
+docker-hub-repo-name: <<DOCKER REPO NAME>>
+
+# Kubernetes
+server: <<API SERVER URI>>
+namespace: <<NAMESPACE>>
+cad: <<CERT AUTH DATA>>
+token: <<K8 TOKEN>>
