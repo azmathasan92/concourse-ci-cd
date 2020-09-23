@@ -1,0 +1,98 @@
+resource_types:
+  - name: kubectl-resource
+    type: docker-image
+    source: 
+      repository: jmkarthik/concourse-kubectl-resource
+      tag: latest
+
+resources:
+
+  - name: devops-lagom-service
+    type: git
+    source:
+      uri: https://github.com/azmathasan92/devops-lagom-service.git
+      branch: devlop
+      username: ((username))
+      password: ((password))
+
+  - name: devops-lagom-service-docker-repository
+    type: docker-image
+    source:
+      email: ((docker-hub-email))
+      username: ((docker-hub-username))
+      password: ((docker-hub-password))
+      repository: ((docker-hub-username))/((docker-hub-repo-name))
+
+  - name: kubectl
+    type: kubectl-resource
+    source:
+      api_server_uri: ((server))
+      namespace: ((namespace))
+      certificate_authority_data: ((cad))
+      token: ((token))
+
+jobs:
+
+  - name: Test
+    public: true
+    serial: true
+    plan:
+      - get: devops-lagom-service
+        trigger: true
+
+      - task: mvn-test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: maven
+              tag: 3.6.0-jdk-8-alpine
+          run:
+            path: "mvn"
+            args:
+              - -f
+              - devops-lagom-service/pom.xml
+              - clean
+              - compile
+              - test
+
+  - name: Package
+    public: true
+    serial: true
+    plan:
+      - get: devops-lagom-service
+        trigger: false
+        passed: [Test]
+      - task: mvn-package
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: maven
+              tag: 3.6.0-jdk-8-alpine
+
+          run:
+            path: "mvn"
+            args:
+              - -f
+              - devops-lagom-service/pom.xml
+              - clean
+              - package
+
+      - put: devops-lagom-service-docker-repository
+        params:
+          build: devops-lagom-service/
+
+  - name: Deploy
+    public: true
+    serial: true
+    plan:
+      - get: devops-lagom-service
+        trigger: false
+        passed: [Test,Package]
+
+      - put: kubectl
+        params:
+          file: "devops-lagom-service/lagom-deploy.yaml"
