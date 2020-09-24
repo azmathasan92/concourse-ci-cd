@@ -7,6 +7,9 @@ image_resource:
     repository: maven
     tag: 3.6.0-jdk-8-alpine
 
+inputs:
+  - name: spring-boot-service
+
 run:
   path: "mvn"
   args:
@@ -14,3 +17,7 @@ run:
     - spring-boot-service/pom.xml
     - clean
     - package
+    
+outputs:
+  - name: spring-boot-service-out
+    path: spring-boot-service
