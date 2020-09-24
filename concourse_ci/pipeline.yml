@@ -31,7 +31,7 @@ resources:
 
 jobs:
 
-  - name: Test
+  - name: test
     public: true
     serial: true
     plan:
@@ -40,26 +40,26 @@ jobs:
       - task: mvn-test
         file: spring-boot-service/concourse_ci/tasks/maven-test.yml
 
-  - name: Package
+  - name: package
     public: true
     serial: true
     plan:
       - get: spring-boot-service
         trigger: true
-        passed: [Test]
+        passed: [test]
       - task: mvn-package
         file: spring-boot-service/concourse_ci/tasks/maven-package.yml
       - put: spring-boot-service-docker-repository
         params:
           build: spring-boot-service/
 
-  - name: Deploy
+  - name: deploy
     public: true
     serial: true
     plan:
       - get: spring-boot-service
         trigger: false
-        passed: [Test,Package]
+        passed: [package]
 
       - put: kubectl
         params:
