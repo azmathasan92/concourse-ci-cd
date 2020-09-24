@@ -38,7 +38,21 @@ jobs:
       - get: spring-boot-service
         trigger: true
       - task: mvn-test
-        file: spring-boot-service/concourse_ci/tasks/maven-test.yml
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: maven
+              tag: 3.6.0-jdk-8-alpine
+          run:
+            path: "mvn"
+            args:
+              - -f
+              - devops-lagom-service/pom.xml
+              - clean
+              - compile
+              - test
 
   - name: package
     public: true
@@ -48,7 +62,21 @@ jobs:
         trigger: true
         passed: [test]
       - task: mvn-package
-        file: spring-boot-service/concourse_ci/tasks/maven-package.yml
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: maven
+              tag: 3.6.0-jdk-8-alpine
+
+          run:
+            path: "mvn"
+            args:
+              - -f
+              - devops-lagom-service/pom.xml
+              - clean
+              - package
       - put: spring-boot-service-docker-repository
         params:
           build: spring-boot-service/
