@@ -8,10 +8,15 @@ image_resource:
     tag: 3.6.0-jdk-8-alpine
 
 run:
-  path: "mvn"
+  path: "sh"
   args:
-    - -f
-    - spring-boot-service/pom.xml
-    - clean
-    - compile
-    - test
+    - ls
+
+# run:
+#   path: "mvn"
+#   args:
+#     - -f
+#     - spring-boot-service/pom.xml
+#     - clean
+#     - compile
+#     - test
