@@ -6,7 +6,6 @@ resource_types:
       tag: latest
 
 resources:
-
   - name: spring-boot-service
     type: git
     source:
@@ -30,7 +29,6 @@ resources:
       token: ((token))
 
 jobs:
-
   - name: test
     public: true
     serial: true
@@ -69,7 +67,6 @@ jobs:
             source:
               repository: maven
               tag: 3.6.0-jdk-8-alpine
-
           run:
             path: "mvn"
             args:
