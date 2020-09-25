@@ -77,3 +77,7 @@ then save the file on local, Don't push it to the repository and you can also us
         `fly -t tutorial unpause-pipeline -p spring-boot-service`
 
 Now you have successfully setup the CI/CD pipeline that test, package and deploy your project to the Kubernetes.
+
+**For more info follow the mentioned blog:**
+
+https://blog.knoldus.com/concourse-ci-cd-pipeline/
