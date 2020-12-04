@@ -21,7 +21,7 @@ public class Application {
 
     @Bean
     RouterFunction<ServerResponse> routes() {
-        return route(GET("/api/hello"), request -> ok().syncBody("Hello, SpringBootDemo!"));
+        return route(GET("/api/hello"), request -> ok().syncBody("Hello, SpringBootDemoFinal!"));
     }
 
     public static void main(String[] args) {
